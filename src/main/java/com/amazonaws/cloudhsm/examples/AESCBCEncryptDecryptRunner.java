@@ -26,6 +26,7 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.IOException;
 import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
@@ -50,7 +51,9 @@ public class AESCBCEncryptDecryptRunner {
         }
 
         // Generate a new AES Key to use for encryption.
-        Key key = SymmetricKeys.generateAESKey(256, "AesCBCTest");
+        Key key = getKeyByLabel("aes256");
+
+        //SymmetricKeys.generateAESKey(256, "AesCBCTest");
 
         // Generate some random data to encrypt
         byte[] plainText = new byte[1024];
@@ -71,6 +74,14 @@ public class AESCBCEncryptDecryptRunner {
 
         String decrypted = decrypt(key, result);
         System.out.println("Decrypted: " + result);
+    }
+
+    private static Key getKeyByLabel(String label)
+            throws CertificateException, IOException, NoSuchAlgorithmException, KeyStoreException,
+            UnrecoverableKeyException {
+        KeyStore keystore = KeyStore.getInstance(CloudHsmProvider.PROVIDER_NAME);
+        keystore.load(null, null);
+        return keystore.getKey(label, null);
     }
 
     /**
