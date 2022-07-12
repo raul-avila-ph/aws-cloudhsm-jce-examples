@@ -23,9 +23,11 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
 import java.io.IOException;
 import java.security.*;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 
@@ -55,22 +57,18 @@ public class AESCBCEncryptDecryptRunner {
 
         // Encrypt the plaintext with authenticated data.
         String aad = "16 bytes of data";
-        List<byte[]> result = encrypt(key, plainText, aad.getBytes());
+        String result = encrypt(key, plainText);
 
-        // Store the HSM's IV and the ciphertext.
-        byte[] iv = result.get(0);
-        byte[] cipherText = result.get(1);
 
-        // The IV will have 12 bytes of data and a 4 byte counter.
-        for (int i=0; i<iv.length; i++) {
-            System.out.printf("%02X", iv[i]);
-        }
-        System.out.printf("\n");
+        System.out.println("Encrypted: " + result);
 
         // Decrypt the ciphertext.
-        byte[] decryptedText = decrypt(key, cipherText, iv, aad.getBytes());
-        assert(Arrays.equals(plainText, decryptedText));
-        System.out.println("Successful decryption");
+//        byte[] decryptedText = decrypt(key, cipherText, iv, aad.getBytes());
+//        assert(Arrays.equals(plainText, decryptedText));
+//        System.out.println("Successful decryption");
+
+        String decrypted = decrypt(key, result);
+        System.out.println("Decrypted: " + result);
     }
 
     /**
@@ -80,18 +78,19 @@ public class AESCBCEncryptDecryptRunner {
      * @param aad
      * @return List of byte[] containing the IV and cipherText
      */
-    public static List<byte[]> encrypt(Key key, byte[] plainText, byte[] aad) {
+    public static String encrypt(Key key, byte[] plainText) throws Exception {
         try {
+            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            IvParameterSpec ivspec = new IvParameterSpec(iv);
+
             // Create an encryption cipher.
             Cipher encCipher = Cipher.getInstance("AES/CBC/NoPadding", CloudHsmProvider.PROVIDER_NAME);
-            encCipher.init(Cipher.ENCRYPT_MODE, key);
-            encCipher.updateAAD(aad);
+            encCipher.init(Cipher.ENCRYPT_MODE, key, ivspec);
+            // encCipher.updateAAD(aad); TODO: not needed for CBC??
             encCipher.update(plainText);
-            byte[] ciphertext = encCipher.doFinal();
+            return Base64.getEncoder()
+                    .encodeToString(encCipher.doFinal(plainText));
 
-            // The IV is generated inside the HSM. It is needed for decryption, so
-            // both the ciphertext and the IV are returned.
-            return Arrays.asList(encCipher.getIV(), ciphertext);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException e) {
             e.printStackTrace();
         } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
@@ -108,16 +107,18 @@ public class AESCBCEncryptDecryptRunner {
      * @param aad
      * @return byte[] of the decrypted ciphertext.
      */
-    public static byte[] decrypt(Key key, byte[] cipherText, byte[] iv, byte[] aad) {
+    public static String decrypt(Key key, String encrypted) {
         Cipher decCipher;
         try {
-            // Only 128 bit tags are supported
-            GCMParameterSpec gcmSpec = new GCMParameterSpec(16 * Byte.SIZE, iv);
+            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            IvParameterSpec ivspec = new IvParameterSpec(iv);
 
             decCipher = Cipher.getInstance("AES/CBC/NoPadding", CloudHsmProvider.PROVIDER_NAME);
-            decCipher.init(Cipher.DECRYPT_MODE, key, gcmSpec);
-            decCipher.updateAAD(aad);
-            return decCipher.doFinal(cipherText);
+            decCipher.init(Cipher.DECRYPT_MODE, key, ivspec);
+
+            //decCipher.updateAAD(aad);
+
+            return new String(decCipher.doFinal(Base64.getDecoder().decode(encrypted)));
 
         } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException e) {
             e.printStackTrace();
