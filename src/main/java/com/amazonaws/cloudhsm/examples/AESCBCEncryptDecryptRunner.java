@@ -37,6 +37,8 @@ import java.util.Random;
  */
 public class AESCBCEncryptDecryptRunner {
 
+    public static byte[] IV = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
     public static void main(String[] z) throws Exception {
         try {
             if (Security.getProvider(CloudHsmProvider.PROVIDER_NAME) == null) {
@@ -80,14 +82,13 @@ public class AESCBCEncryptDecryptRunner {
      */
     public static String encrypt(Key key, byte[] plainText) throws Exception {
         try {
-            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-            IvParameterSpec ivspec = new IvParameterSpec(iv);
+            IvParameterSpec ivspec = new IvParameterSpec(IV);
 
             // Create an encryption cipher.
             Cipher encCipher = Cipher.getInstance("AES/CBC/NoPadding", CloudHsmProvider.PROVIDER_NAME);
             encCipher.init(Cipher.ENCRYPT_MODE, key, ivspec);
-            // encCipher.updateAAD(aad); TODO: not needed for CBC??
-            encCipher.update(plainText);
+
+            //encCipher.update(plainText);
             return Base64.getEncoder()
                     .encodeToString(encCipher.doFinal(plainText));
 
@@ -110,13 +111,10 @@ public class AESCBCEncryptDecryptRunner {
     public static String decrypt(Key key, String encrypted) {
         Cipher decCipher;
         try {
-            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-            IvParameterSpec ivspec = new IvParameterSpec(iv);
+            IvParameterSpec ivspec = new IvParameterSpec(IV);
 
             decCipher = Cipher.getInstance("AES/CBC/NoPadding", CloudHsmProvider.PROVIDER_NAME);
             decCipher.init(Cipher.DECRYPT_MODE, key, ivspec);
-
-            //decCipher.updateAAD(aad);
 
             return new String(decCipher.doFinal(Base64.getDecoder().decode(encrypted)));
 
