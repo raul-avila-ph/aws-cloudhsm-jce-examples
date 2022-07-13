@@ -16,43 +16,36 @@
  */
 package com.amazonaws.cloudhsm.examples;
 
+import com.amazonaws.cloudhsm.jce.jni.exception.AddAttributeException;
 import com.amazonaws.cloudhsm.jce.provider.CloudHsmProvider;
 import com.amazonaws.cloudhsm.jce.provider.KeyStoreWithAttributes;
-import com.amazonaws.cloudhsm.jce.jni.exception.AddAttributeException;
 import com.amazonaws.cloudhsm.jce.provider.attributes.KeyAttribute;
 import com.amazonaws.cloudhsm.jce.provider.attributes.KeyAttributesMap;
 import com.amazonaws.cloudhsm.jce.provider.attributes.KeyAttributesMapBuilder;
 import com.amazonaws.cloudhsm.jce.provider.attributes.KeyType;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.Security;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.security.interfaces.RSAPrivateCrtKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
+
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.security.auth.DestroyFailedException;
 import javax.security.auth.Destroyable;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.*;
+import java.security.cert.CertificateException;
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 
 /**
  * This sample demonstrates how to work with keys. This could be importing keys, exporting keys, loading keys by handle,
  * or deleting keys.
  */
-public class KeyUtilitiesRunner {
+public class KeyUtilitiesRunnerOriginal {
     private static String helpString = "KeyUtilitiesRunner\n" +
             "This sample demonstrates the different utility methods for working with keys in the HSM.\n" +
             "\n" +
@@ -89,21 +82,6 @@ public class KeyUtilitiesRunner {
         String pemFile = null;
         modes mode = modes.INVALID;
 
-        Key key = null;
-
-        // We only have label to find a key
-        key = getKeyByLabel("aes256");
-
-        // We have additional attributes which we can use to find a key
-        //key = getKeyByUsingAttributesMap("aes256", KeyType.AES);
-
-        if (null != key) {
-            System.out.println("Fetched key with label: " + label);
-        } else {
-            System.out.println("Could not find the given key label " + label);
-        }
-
-        /*
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             switch (arg) {
@@ -194,7 +172,6 @@ public class KeyUtilitiesRunner {
                 break;
             }
         }
-         */
     }
 
     private static void help() {
