@@ -75,7 +75,7 @@ public class AESCBCEncryptDecryptRunner {
 //        System.out.println("Successful decryption");
 
         String decrypted = decrypt(key, result);
-        System.out.println("Decrypted: " + result);
+        System.out.println("Decrypted: " + decrypted);
     }
 
     private static Key getKeyByLabel(String label)
