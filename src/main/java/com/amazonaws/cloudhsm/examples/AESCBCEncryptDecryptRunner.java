@@ -17,7 +17,7 @@
 package com.amazonaws.cloudhsm.examples;
 
 import com.amazonaws.cloudhsm.jce.provider.CloudHsmProvider;
-import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
+import org.apache.commons.codec.binary.Hex;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -105,7 +105,7 @@ public class AESCBCEncryptDecryptRunner {
 //            return Base64.getEncoder()
 //                    .encodeToString(encCipher.doFinal(plainText));
 
-            return HexBin.encode(encCipher.doFinal(plainText));
+            return new String(Hex.encodeHex(plainText));
 
         } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException e) {
             e.printStackTrace();
@@ -123,7 +123,7 @@ public class AESCBCEncryptDecryptRunner {
      * @param aad
      * @return byte[] of the decrypted ciphertext.
      */
-    public static String decrypt(Key key, String encrypted) {
+    public static String decrypt(Key key, String encrypted) throws Exception {
         Cipher decCipher;
         try {
             IvParameterSpec ivspec = new IvParameterSpec(IV);
@@ -132,7 +132,7 @@ public class AESCBCEncryptDecryptRunner {
             decCipher.init(Cipher.DECRYPT_MODE, key, ivspec);
 
             //return new String(decCipher.doFinal(Base64.getDecoder().decode(encrypted)));
-            return new String(decCipher.doFinal(HexBin.decode(encrypted)));
+            return new String(decCipher.doFinal(Hex.decodeHex(encrypted)));
 
         } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException e) {
             e.printStackTrace();
