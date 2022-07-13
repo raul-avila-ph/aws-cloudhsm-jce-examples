@@ -66,6 +66,7 @@ public class AESCBCEncryptDecryptRunner {
         String aad = "16 bytes of data";
         String result = encrypt(key, plainText);
 
+        System.out.println("Text: " + plainText);
 
         System.out.println("Encrypted: " + result);
 
