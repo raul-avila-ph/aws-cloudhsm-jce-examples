@@ -26,6 +26,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
@@ -58,15 +59,16 @@ public class AESCBCEncryptDecryptRunner {
         //getKeyByLabel("aes256");
 
         // Generate some random data to encrypt
-        byte[] plainText = new byte[1024];
-        Random r = new Random();
-        r.nextBytes(plainText);
+//        byte[] plainText = new byte[1024];
+//        Random r = new Random();
+//        r.nextBytes(plainText);
+
+        String message = "Hello world";
 
         // Encrypt the plaintext with authenticated data.
-        String aad = "16 bytes of data";
-        String result = encrypt(key, plainText);
+        String result = encrypt(key, message.getBytes(StandardCharsets.UTF_8));
 
-        System.out.println("Text: " + plainText);
+        System.out.println("Text: " + message);
 
         System.out.println("Encrypted: " + result);
 
@@ -103,8 +105,10 @@ public class AESCBCEncryptDecryptRunner {
             encCipher.init(Cipher.ENCRYPT_MODE, key, ivspec);
 
             //encCipher.update(plainText);
+            byte[] encryptedData = encCipher.doFinal(plainText);
+
             return Base64.getEncoder()
-                    .encodeToString(encCipher.doFinal(plainText));
+                    .encodeToString(encryptedData);
 
             //return new String(Hex.encodeHex(encCipher.doFinal(plainText)));
 
@@ -131,7 +135,9 @@ public class AESCBCEncryptDecryptRunner {
             decCipher = Cipher.getInstance("AES/CBC/NoPadding", CloudHsmProvider.PROVIDER_NAME);
             decCipher.init(Cipher.DECRYPT_MODE, key, ivspec);
 
-            return new String(decCipher.doFinal(Base64.getDecoder().decode(encrypted)));
+            byte[] decodedData = Base64.getDecoder().decode(encrypted);
+            byte[] decryptedData = decCipher.doFinal(decodedData);
+            return new String(decryptedData, StandardCharsets.UTF_8);
             //return new String(decCipher.doFinal(Hex.decodeHex(encrypted)));
 
         } catch (Exception e) {
