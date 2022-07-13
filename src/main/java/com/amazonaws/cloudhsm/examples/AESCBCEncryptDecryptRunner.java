@@ -106,7 +106,7 @@ public class AESCBCEncryptDecryptRunner {
 //            return Base64.getEncoder()
 //                    .encodeToString(encCipher.doFinal(plainText));
 
-            return new String(Hex.encodeHex(plainText));
+            return new String(Hex.encodeHex(encCipher.doFinal(plainText)));
 
         } catch (Exception e) {
             e.printStackTrace();
