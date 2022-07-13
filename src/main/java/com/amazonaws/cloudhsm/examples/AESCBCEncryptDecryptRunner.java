@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Random;
+import java.security.KeyStore;
 
 /**
  * This sample demonstrates how to encrypt data with AES GCM. It shows where the IV is generated
