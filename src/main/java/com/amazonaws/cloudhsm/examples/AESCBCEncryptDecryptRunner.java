@@ -107,11 +107,10 @@ public class AESCBCEncryptDecryptRunner {
 
             return new String(Hex.encodeHex(plainText));
 
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
@@ -134,13 +133,10 @@ public class AESCBCEncryptDecryptRunner {
             //return new String(decCipher.doFinal(Base64.getDecoder().decode(encrypted)));
             return new String(decCipher.doFinal(Hex.decodeHex(encrypted)));
 
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         return null;
     }
 }
