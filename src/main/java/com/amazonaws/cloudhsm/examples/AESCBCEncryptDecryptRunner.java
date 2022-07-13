@@ -17,6 +17,7 @@
 package com.amazonaws.cloudhsm.examples;
 
 import com.amazonaws.cloudhsm.jce.provider.CloudHsmProvider;
+import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -52,9 +53,9 @@ public class AESCBCEncryptDecryptRunner {
         }
 
         // Generate a new AES Key to use for encryption.
-        Key key = getKeyByLabel("aes256");
+        Key key = SymmetricKeys.generateAESKey(256, "AesCBCTest");
 
-        //SymmetricKeys.generateAESKey(256, "AesCBCTest");
+        //getKeyByLabel("aes256");
 
         // Generate some random data to encrypt
         byte[] plainText = new byte[1024];
@@ -101,8 +102,10 @@ public class AESCBCEncryptDecryptRunner {
             encCipher.init(Cipher.ENCRYPT_MODE, key, ivspec);
 
             //encCipher.update(plainText);
-            return Base64.getEncoder()
-                    .encodeToString(encCipher.doFinal(plainText));
+//            return Base64.getEncoder()
+//                    .encodeToString(encCipher.doFinal(plainText));
+
+            return HexBin.encode(encCipher.doFinal(plainText));
 
         } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException e) {
             e.printStackTrace();
@@ -128,7 +131,8 @@ public class AESCBCEncryptDecryptRunner {
             decCipher = Cipher.getInstance("AES/CBC/NoPadding", CloudHsmProvider.PROVIDER_NAME);
             decCipher.init(Cipher.DECRYPT_MODE, key, ivspec);
 
-            return new String(decCipher.doFinal(Base64.getDecoder().decode(encrypted)));
+            //return new String(decCipher.doFinal(Base64.getDecoder().decode(encrypted)));
+            return new String(decCipher.doFinal(HexBin.decode(encrypted)));
 
         } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException e) {
             e.printStackTrace();
