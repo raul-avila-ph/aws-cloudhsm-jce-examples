@@ -101,16 +101,16 @@ public class AESCBCEncryptDecryptRunner {
             IvParameterSpec ivspec = new IvParameterSpec(IV);
 
             // Create an encryption cipher.
-            Cipher encCipher = Cipher.getInstance("AES/CBC/NoPadding", CloudHsmProvider.PROVIDER_NAME);
+            Cipher encCipher = Cipher.getInstance("AES/CBC/PKCS5Padding", CloudHsmProvider.PROVIDER_NAME);
             encCipher.init(Cipher.ENCRYPT_MODE, key, ivspec);
 
             //encCipher.update(plainText);
             byte[] encryptedData = encCipher.doFinal(plainText);
 
-            return Base64.getEncoder()
-                    .encodeToString(encryptedData);
+//            return Base64.getEncoder()
+//                    .encodeToString(encryptedData);
 
-            //return new String(Hex.encodeHex(encCipher.doFinal(plainText)));
+            return new String(Hex.encodeHex(encryptedData));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,10 +132,11 @@ public class AESCBCEncryptDecryptRunner {
         try {
             IvParameterSpec ivspec = new IvParameterSpec(IV);
 
-            decCipher = Cipher.getInstance("AES/CBC/NoPadding", CloudHsmProvider.PROVIDER_NAME);
+            decCipher = Cipher.getInstance("AES/CBC/PKCS5Padding", CloudHsmProvider.PROVIDER_NAME);
             decCipher.init(Cipher.DECRYPT_MODE, key, ivspec);
 
-            byte[] decodedData = Base64.getDecoder().decode(encrypted);
+            //byte[] decodedData = Base64.getDecoder().decode(encrypted);
+            byte[] decodedData = Hex.decodeHex(encrypted);
             byte[] decryptedData = decCipher.doFinal(decodedData);
             return new String(decryptedData, "UTF-8");
             //return new String(decCipher.doFinal(Hex.decodeHex(encrypted)));
