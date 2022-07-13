@@ -66,7 +66,7 @@ public class AESCBCEncryptDecryptRunner {
         String message = "Hello world";
 
         // Encrypt the plaintext with authenticated data.
-        String result = encrypt(key, message.getBytes(StandardCharsets.UTF_8));
+        String result = encrypt(key, message.getBytes("UTF-8"));
 
         System.out.println("Text: " + message);
 
@@ -137,7 +137,7 @@ public class AESCBCEncryptDecryptRunner {
 
             byte[] decodedData = Base64.getDecoder().decode(encrypted);
             byte[] decryptedData = decCipher.doFinal(decodedData);
-            return new String(decryptedData, StandardCharsets.UTF_8);
+            return new String(decryptedData, "UTF-8");
             //return new String(decCipher.doFinal(Hex.decodeHex(encrypted)));
 
         } catch (Exception e) {
