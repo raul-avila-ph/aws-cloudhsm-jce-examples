@@ -103,10 +103,10 @@ public class AESCBCEncryptDecryptRunner {
             encCipher.init(Cipher.ENCRYPT_MODE, key, ivspec);
 
             //encCipher.update(plainText);
-//            return Base64.getEncoder()
-//                    .encodeToString(encCipher.doFinal(plainText));
+            return Base64.getEncoder()
+                    .encodeToString(encCipher.doFinal(plainText));
 
-            return new String(Hex.encodeHex(encCipher.doFinal(plainText)));
+            //return new String(Hex.encodeHex(encCipher.doFinal(plainText)));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,8 +131,8 @@ public class AESCBCEncryptDecryptRunner {
             decCipher = Cipher.getInstance("AES/CBC/NoPadding", CloudHsmProvider.PROVIDER_NAME);
             decCipher.init(Cipher.DECRYPT_MODE, key, ivspec);
 
-            //return new String(decCipher.doFinal(Base64.getDecoder().decode(encrypted)));
-            return new String(decCipher.doFinal(Hex.decodeHex(encrypted)));
+            return new String(decCipher.doFinal(Base64.getDecoder().decode(encrypted)));
+            //return new String(decCipher.doFinal(Hex.decodeHex(encrypted)));
 
         } catch (Exception e) {
             e.printStackTrace();
