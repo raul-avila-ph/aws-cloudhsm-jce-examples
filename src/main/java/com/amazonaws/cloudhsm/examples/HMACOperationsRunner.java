@@ -22,6 +22,7 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.Base64;
 import javax.crypto.Mac;
+import org.apache.commons.codec.binary.Hex;
 
 /**
  * Demonstrate basic HMAC operation.
@@ -72,7 +73,8 @@ public class HMACOperationsRunner {
                 algorithm,
                 CloudHsmProvider.PROVIDER_NAME);
 
-        System.out.println("CloudHSM HMAC= " + Base64.getEncoder().encodeToString(cloudHsmDigest));
+        System.out.println("CloudHSM HMAC= " +
+                Hex.encodeHex(cloudHsmDigest));
     }
 
     private static Key getKeyByLabel(String label)
