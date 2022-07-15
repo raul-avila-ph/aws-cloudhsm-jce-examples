@@ -74,7 +74,8 @@ public class HMACOperationsRunner {
                 CloudHsmProvider.PROVIDER_NAME);
 
         System.out.println("CloudHSM HMAC= " +
-                Hex.encodeHex(cloudHsmDigest));
+                new String(Hex.encodeHex(cloudHsmDigest)));
+
     }
 
     private static Key getKeyByLabel(String label)
