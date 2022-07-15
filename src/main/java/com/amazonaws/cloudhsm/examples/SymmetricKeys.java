@@ -69,7 +69,7 @@ public class SymmetricKeys {
         hmacSpec.put(KeyAttribute.LABEL, keyLabel);
         hmacSpec.put(KeyAttribute.SIZE, 24);
 
-        KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA1", CloudHsmProvider.PROVIDER_NAME);
+        KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256", CloudHsmProvider.PROVIDER_NAME);
         keyGen.init(hmacSpec);
         SecretKey hmacKey = keyGen.generateKey();
 

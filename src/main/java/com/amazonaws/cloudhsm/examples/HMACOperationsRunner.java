@@ -18,11 +18,8 @@ package com.amazonaws.cloudhsm.examples;
 
 import com.amazonaws.cloudhsm.jce.provider.CloudHsmProvider;
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.Security;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.Base64;
 import javax.crypto.Mac;
 
@@ -64,10 +61,25 @@ public class HMACOperationsRunner {
 
         String plainText = "This is a sample Plain Text Message!";
 
-        Key key = SymmetricKeys.generateHmacKey("HmacTest");
-        String algorithm = "HmacSHA1";
+        Key key = getKeyByLabel("hmac");
+                //SymmetricKeys.generateHmacKey("HmacTest");
 
-        byte[] cloudHsmDigest = digest(plainText.getBytes("UTF-8"), key, algorithm, CloudHsmProvider.PROVIDER_NAME);
+        String algorithm = "HmacSHA256";
+
+        byte[] cloudHsmDigest = digest(
+                plainText.getBytes("UTF-8"),
+                key,
+                algorithm,
+                CloudHsmProvider.PROVIDER_NAME);
+
         System.out.println("CloudHSM HMAC= " + Base64.getEncoder().encodeToString(cloudHsmDigest));
+    }
+
+    private static Key getKeyByLabel(String label)
+            throws CertificateException, IOException, NoSuchAlgorithmException, KeyStoreException,
+            UnrecoverableKeyException {
+        KeyStore keystore = KeyStore.getInstance(CloudHsmProvider.PROVIDER_NAME);
+        keystore.load(null, null);
+        return keystore.getKey(label, null);
     }
 }

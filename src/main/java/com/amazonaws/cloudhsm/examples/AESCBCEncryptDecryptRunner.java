@@ -54,9 +54,11 @@ public class AESCBCEncryptDecryptRunner {
         }
 
         // Generate a new AES Key to use for encryption.
-        Key key = SymmetricKeys.generateAESKey(256, "AesCBCTest");
+        Key key = getKeyByLabel("aes256");
 
-        //getKeyByLabel("aes256");
+                //SymmetricKeys.generateAESKey(256, "AesCBCTest");
+
+        //
 
         // Generate some random data to encrypt
 //        byte[] plainText = new byte[1024];
